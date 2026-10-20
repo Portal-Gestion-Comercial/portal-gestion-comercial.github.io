@@ -1,0 +1,32 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Portal de Gestión Comercial</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%23ED7D31%22/%3E%3C/svg%3E">
+<style>
+:root{--ink:#12233A;--ink2:#586B82;--line:#DFE4EA;--bg:#EFF2F5;--acc:#ED7D31}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:"Segoe UI",system-ui,sans-serif;color:var(--ink)}
+header{padding-bottom:44px!important;background:repeating-linear-gradient(135deg,rgba(255,255,255,.03) 0 2px,transparent 2px 14px),linear-gradient(115deg,#0B2540,#123A5E 45%,#1F5A8C);color:#fff;padding:30px 48px 34px;border-bottom:4px solid var(--acc)}
+.top{display:flex;align-items:center;gap:16px}.ic{width:56px;height:56px;border-radius:14px;background:linear-gradient(160deg,#F59A5B,#ED7D31 55%,#C15F1C);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(237,125,49,.35)}
+h1{margin:0;font-size:30px}h1 span{color:var(--acc)}.sub{margin-top:6px;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:#AFC0D2;border-left:2px solid var(--acc);padding-left:10px}.sub b{color:#FFB47E}
+.intro{margin-top:18px;color:#DCE6EF;font-size:15px;max-width:760px}
+main{max-width:1240px;margin:-22px auto 40px;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:20px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 24px rgba(18,35,58,.08);overflow:hidden;display:flex;flex-direction:column}
+.band{height:8px}.cb{padding:20px 22px 22px;display:flex;flex-direction:column;gap:10px;flex:1}
+.tag{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+.card h2{margin:0;font-size:21px}.card p{margin:0;color:var(--ink2);font-size:13.5px;line-height:1.5;flex:1}
+.meta{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:12px;font-size:12px;color:var(--ink2)}
+.meta b{color:var(--ink);font-family:Consolas,monospace}
+.btn:hover{filter:brightness(1.08)}
+.btn{display:inline-block;text-decoration:none;color:#fff;font-weight:700;font-size:13.5px;padding:10px 16px;border-radius:10px;text-align:center}
+.foot{max-width:1240px;margin:0 auto 30px;padding:0 24px;font-size:12px;color:var(--ink2);text-align:center}
+@media (max-width:600px){header{padding:22px 16px 40px}h1{font-size:23px}main{padding:0 16px}}
+</style></head><body>
+<header><div class="top"><div class="ic"><svg width="30" height="30" viewBox="0 0 32 32" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><rect x="4" y="4" width="10" height="10" rx="2"/><rect x="18" y="4" width="10" height="10" rx="2"/><rect x="4" y="18" width="10" height="10" rx="2"/><rect x="18" y="18" width="10" height="10" rx="2"/></svg></div>
+<div><h1>Portal de <span>Gestión Comercial</span></h1><div class="sub">Departamento de Control de Gestión Comercial · <b>Dirección Comercial</b></div></div></div>
+</header>
+<main>
+<div class="card"><div class="band" style="background:#2E9E6D"></div><div class="cb"><span class="tag" style="color:#2E9E6D">Recaudación</span><h2>Cobrabilidad</h2><p>Seguimiento diario de la recaudación por zona y oficina comercial, metas y ranking.</p><div class="meta"><span>Actualización diaria</span></div><a class="btn" style="background:#2E9E6D" href="https://amarmolejos26.github.io/Dashboard-Cobrabilidad-M-vil/">Abrir dashboard ›</a></div></div>
+<div class="card"><div class="band" style="background:#1F5A8C"></div><div class="cb"><span class="tag" style="color:#1F5A8C">Deuda · Zonas</span><h2>Deuda Clientes Regulares</h2><p>Pendiente de cobro de la facturación reciente por zona y unidad comercial, con alerta de órdenes de corte.</p><div class="meta"><span>Actualización diaria</span></div><a class="btn" style="background:#1F5A8C" href="https://amarmolejos26.github.io/Pendiente-de-Cobro-Clientes-Regulares/">Abrir dashboard ›</a></div></div>
+<div class="card"><div class="band" style="background:#44546A"></div><div class="cb"><span class="tag" style="color:#44546A">Deuda · Grandes Clientes</span><h2>Deuda Grandes Clientes</h2><p>Pendiente de cobro por asignación y ejecutivo: deuda vencida, histórica, reclamos y cortes.</p><div class="meta"><span>Actualización diaria</span></div><a class="btn" style="background:#44546A" href="https://amarmolejos26.github.io/Grandes-Clientes/">Abrir dashboard ›</a></div></div>
+<div class="card"><div class="band" style="background:#D98A1F"></div><div class="cb"><span class="tag" style="color:#C77A12">Subsidio</span><h2>Bonoluz</h2><p>Seguimiento de los clientes del programa Bonoluz y su comportamiento de pago.</p><div class="meta"><span>Actualización diaria</span></div><a class="btn" style="background:#D98A1F" href="https://amarmolejos26.github.io/Dashboard-Bonoluz/">Abrir dashboard ›</a></div></div>
+</main>
+<div class="foot">Fuente: IBM Cognos · Elaborado por el Departamento de Control de Gestión Comercial</div>
+</body></html>
