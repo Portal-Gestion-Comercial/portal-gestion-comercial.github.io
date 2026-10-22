@@ -93,7 +93,7 @@ async function login(e){e.preventDefault();const u=V.users.find(x=>x.u===norm($(
 $('login').addEventListener('submit',login);
 // abrir dashboards entregándoles la llave (sin ponerla en el enlace)
 $('main').addEventListener('click',e=>{const a=e.target.closest('a[href]');if(!a||!RAW)return;let u;try{u=new URL(a.href)}catch(_){return}if(u.origin!==DASH)return;
-  e.preventDefault();const w=window.open(a.href,'_blank');if(!w)location.href=a.href});
+  e.preventDefault();const w=window.open(a.href,'pgc_dashboard');if(!w)location.href=a.href;else try{w.focus()}catch(_){}});
 addEventListener('message',e=>{if(e.origin!==DASH||!e.data||e.data.pgc!=='ready'||!RAW||!vigente(T0))return;try{e.source.postMessage({pgc:'key',k:b64(RAW),t:T0},DASH)}catch(_){}});
 function vigilar(t){const chk=()=>{if(!vigente(t)){try{sessionStorage.removeItem(SK)}catch(_){}location.reload()}};setInterval(chk,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}
 $('out2').addEventListener('click',()=>{try{sessionStorage.removeItem(SK)}catch(_){}if(location.protocol==='file:'){location.reload();return}location.href=DASH+'/Grandes-Clientes/salir.html'});
