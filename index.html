@@ -79,26 +79,22 @@ const C=crypto.subtle,te=new TextEncoder(),td=new TextDecoder();
 const b64=u=>{let s='';const a=new Uint8Array(u);for(let i=0;i<a.length;i+=32768)s+=String.fromCharCode.apply(null,a.subarray(i,i+32768));return btoa(s)};
 const ub=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 const norm=u=>String(u||'').trim().toLowerCase();
-const SK='pgc_ses',MAXH=8;const vigente=t=>t&&Date.now()-t<MAXH*36e5&&new Date(t).toDateString()===new Date().toDateString();let KEY=null,RAW=null,ME=null,T0=0;const DASH='https://amarmolejos26.github.io';
+const SK='pgc_ses',MAXH=8;const vigente=t=>t&&Date.now()-t<MAXH*36e5&&new Date(t).toDateString()===new Date().toDateString();let KEY=null,RAW=null,ME=null;
 async function kek(pw,salt,iter){const b=await C.importKey('raw',te.encode(pw),'PBKDF2',false,['deriveKey']);return C.deriveKey({name:'PBKDF2',hash:'SHA-256',salt:ub(salt),iterations:iter},b,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
 async function open(raw){KEY=await C.importKey('raw',raw,'AES-GCM',true,['encrypt','decrypt']);RAW=raw;
   const html=td.decode(await C.decrypt({name:'AES-GCM',iv:ub(V.iv)},KEY,ub(V.ct)));$('main').innerHTML=html;$('main').hidden=false;$('lwrap').hidden=true}
-function show(u){ME=u;$('hU').textContent=u.u;$('hdu').hidden=false;$('admBtn').hidden=!u.a;$('ses').hidden=$('admBtn').hidden}
+function show(u){ME=u;$('hU').textContent=u.u;$('hdu').hidden=false;$('admBtn').hidden=!(u.a&&location.protocol==='file:');$('ses').hidden=$('admBtn').hidden}
 async function login(e){e.preventDefault();const u=V.users.find(x=>x.u===norm($('lu').value));$('lerr').textContent='';$('lgo').disabled=true;$('lgo').textContent='Verificando…';
   try{if(!u)throw 0;const k=await kek($('lp').value,u.s,V.iter);const raw=await C.decrypt({name:'AES-GCM',iv:ub(u.iv)},k,ub(u.w));await open(raw);
-    const t0=Date.now();try{sessionStorage.setItem(SK,JSON.stringify({u:u.u,k:b64(raw),t:t0}))}catch(_){}T0=t0;show(u);vigilar(t0)}
+    const t0=Date.now();try{sessionStorage.setItem(SK,JSON.stringify({u:u.u,k:b64(raw),t:t0}))}catch(_){}show(u);vigilar(t0)}
   catch(_){$('lerr').textContent='Usuario o contraseña incorrectos.';$('lp').value='';$('lp').focus()}
   finally{$('lgo').disabled=false;$('lgo').textContent='Entrar'}}
 $('login').addEventListener('submit',login);
-// abrir dashboards entregándoles la llave (sin ponerla en el enlace)
-$('main').addEventListener('click',e=>{const a=e.target.closest('a[href]');if(!a||!RAW)return;let u;try{u=new URL(a.href)}catch(_){return}if(u.origin!==DASH)return;
-  e.preventDefault();const w=window.open(a.href,'_blank');if(!w)location.href=a.href});
-addEventListener('message',e=>{if(e.origin!==DASH||!e.data||e.data.pgc!=='ready'||!RAW||!vigente(T0))return;try{e.source.postMessage({pgc:'key',k:b64(RAW),t:T0},DASH)}catch(_){}});
 function vigilar(t){const chk=()=>{if(!vigente(t)){try{sessionStorage.removeItem(SK)}catch(_){}location.reload()}};setInterval(chk,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()})}
-$('out2').addEventListener('click',()=>{try{sessionStorage.removeItem(SK)}catch(_){}if(location.protocol==='file:'){location.reload();return}location.href=DASH+'/Grandes-Clientes/salir.html'});
+$('out2').addEventListener('click',()=>{try{sessionStorage.removeItem(SK)}catch(_){}location.reload()});
 (async()=>{let s=null;try{s=JSON.parse(sessionStorage.getItem(SK)||'null')}catch(_){}
   const u=s&&V.users.find(x=>x.u===s.u);
-  if(u&&vigente(s.t)){try{await open(ub(s.k));T0=s.t;show(u);vigilar(s.t);return}catch(_){try{sessionStorage.removeItem(SK)}catch(e){}}}
+  if(u&&vigente(s.t)){try{await open(ub(s.k));show(u);vigilar(s.t);return}catch(_){try{sessionStorage.removeItem(SK)}catch(e){}}}
   $('login').hidden=false;$('lu').focus()})();
 // ---- administración (solo en la copia local)
 function list(){$('uList').innerHTML=V.users.map((x,i)=>`<tr><td>${x.u.replace(/[<&>"]/g,'')}</td><td>${x.a?'Administrador':'Consulta'}</td><td>${x.u===ME.u?'<small>(usted)</small>':`<button class="lk" type="button" data-del="${i}">Eliminar</button>`}</td></tr>`).join('');
