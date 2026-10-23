@@ -66,7 +66,7 @@ main{max-width:1240px;margin:-22px auto 40px;padding:0 24px;display:grid;grid-te
 <h2>Usuarios del portal</h2><p class="hint">Agregue, cambie o elimine usuarios. Luego pulse <b>Guardar portal</b>, reemplace el index.html de la carpeta del repositorio y haga Commit y Push en GitHub Desktop.</p>
 <div style="display:flex;gap:10px;align-items:center;margin:0 0 10px"><input class="in" id="uq" type="search" placeholder="Buscar usuario (número de empleado)…" autocomplete="off" style="padding:9px 12px;font-size:13.5px"><span id="uc" style="font-size:12.5px;color:var(--ink2);white-space:nowrap"></span></div>
 <div style="max-height:360px;overflow:auto;border-bottom:1px solid var(--line);margin-bottom:16px"><table class="ut" style="margin-bottom:0"><thead><tr><th>Usuario</th><th>Rol</th><th></th></tr></thead><tbody id="uList"></tbody></table></div>
-<div class="row"><div><label class="fl" for="nu">Usuario</label><input class="in" id="nu" autocapitalize="none" spellcheck="false"></div><div><label class="fl" for="np">Contraseña (mín. 4)</label><input class="in" id="np" type="text" autocomplete="new-password"></div><label class="ck"><input type="checkbox" id="na">Administrador</label><button class="sb" id="nAdd" type="button">Agregar / cambiar</button></div>
+<div class="row"><div><label class="fl" for="nu">Usuario</label><input class="in" id="nu" autocapitalize="none" spellcheck="false"></div><div><label class="fl" for="np">Contraseña (mín. 4)</label><input class="in" id="np" type="text" autocomplete="new-password"></div><label class="ck"><input type="checkbox" id="na">Administrador</label><button class="sb" id="nAdd" type="button">Agregar / cambiar</button><button class="sb" id="nCan" type="button" hidden>Cancelar</button></div>
 <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"><button class="sb pri" id="save" type="button">Guardar portal</button></div>
 <div class="msg" id="amsg"></div>
 </div></section>
@@ -103,19 +103,34 @@ $('out2').addEventListener('click',()=>{try{sessionStorage.removeItem(SK)}catch(
   if(u&&vigente(s.t)){try{await open(ub(s.k));T0=s.t;show(u);vigilar(s.t);return}catch(_){try{sessionStorage.removeItem(SK)}catch(e){}}}
   $('login').hidden=false;$('lu').focus()})();
 // ---- administración (solo en la copia local)
-function list(){const q=($('uq').value||'').trim().toLowerCase();const L=V.users.map((x,i)=>[x,i]).filter(([x])=>!q||x.u.includes(q));$('uc').textContent=q?`${L.length} de ${V.users.length}`:`${V.users.length} usuarios`;$('uList').innerHTML=(L.length?'':'<tr><td colspan="3" style="color:var(--ink2)">Ningún usuario coincide.</td></tr>')+L.map(([x,i])=>`<tr><td>${x.u.replace(/[<&>"]/g,'')}</td><td>${x.a?'Administrador':'Consulta'}</td><td>${x.u===ME.u?'<small>(usted)</small>':`<button class="lk" type="button" data-del="${i}">Eliminar</button>`}</td></tr>`).join('');
+function list(){const q=($('uq').value||'').trim().toLowerCase();const L=V.users.map((x,i)=>[x,i]).filter(([x])=>!q||x.u.includes(q));$('uc').textContent=q?`${L.length} de ${V.users.length}`:`${V.users.length} usuarios`;$('uList').innerHTML=(L.length?'':'<tr><td colspan="3" style="color:var(--ink2)">Ningún usuario coincide.</td></tr>')+L.map(([x,i])=>`<tr><td>${x.u.replace(/[<&>"]/g,'')}</td><td>${x.a?'Administrador':'Consulta'}</td><td><button class="lk" type="button" data-ed="${i}">Modificar</button>${x.u===ME.u?' &nbsp;<small>(usted)</small>':` &nbsp;<button class="lk" type="button" data-del="${i}">Eliminar</button>`}</td></tr>`).join('');
+  $('uList').querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>editar(+b.dataset.ed));
   $('uList').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const x=V.users[+b.dataset.del];if(x.a&&V.users.filter(y=>y.a).length<2){msg('Debe quedar al menos un administrador.',1);return}V.users.splice(+b.dataset.del,1);list();msg(`Usuario "${x.u}" eliminado. Recuerde guardar el portal.`)})}
 function msg(t,bad){$('amsg').textContent=t;$('amsg').style.color=bad?'#B42318':'#1E7B4C'}
 $('uq').addEventListener('input',()=>list());
 $('admBtn').addEventListener('click',()=>{$('adm').hidden=!$('adm').hidden;if(!$('adm').hidden){list();$('adm').scrollIntoView({behavior:'smooth'})}});
-$('nAdd').addEventListener('click',async()=>{const u=norm($('nu').value),p=$('np').value;
+let EI=-1;
+function modo(ed){EI=ed;$('nAdd').textContent=ed>=0?'Guardar cambios':'Agregar / cambiar';$('nCan').hidden=ed<0;$('np').placeholder=ed>=0?'Dejar vacío para no cambiarla':''}
+function limpiar(){$('nu').value='';$('np').value='';$('na').checked=false;modo(-1)}
+function editar(i){const x=V.users[i];$('nu').value=x.u;$('np').value='';$('na').checked=!!x.a;modo(i);msg(`Modificando "${x.u}": corrija el usuario o escriba la nueva clave y pulse Guardar cambios.`);$('nu').focus();$('nu').scrollIntoView({behavior:'smooth',block:'center'})}
+$('nCan').addEventListener('click',()=>{limpiar();msg('')});
+$('nAdd').addEventListener('click',async()=>{const u=norm($('nu').value),p=$('np').value,a=$('na').checked?1:0;
   if(!/^[a-z0-9._-]{3,40}$/.test(u)){msg('Usuario: 3 a 40 caracteres, sin espacios (letras, números, punto, guion).',1);return}
-  if(p.length<4){msg('La contraseña debe tener al menos 4 caracteres.',1);return}
-  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
-  const k=await kek(p,b64(salt),V.iter);const w=await C.encrypt({name:'AES-GCM',iv},k,RAW);
-  const rec={u,a:$('na').checked?1:0,s:b64(salt),iv:b64(iv),w:b64(w)};const i=V.users.findIndex(x=>x.u===u);
-  if(i>=0){if(V.users[i].a&&!rec.a&&V.users.filter(y=>y.a).length<2){msg('Debe quedar al menos un administrador.',1);return}V.users[i]=rec}else V.users.push(rec);
-  $('nu').value='';$('np').value='';$('na').checked=false;list();msg(`${i>=0?'Contraseña actualizada para':'Usuario agregado:'} "${u}". Recuerde guardar el portal.`)});
+  const ed=EI>=0?V.users[EI]:null,otro=V.users.findIndex(x=>x.u===u);
+  if(ed&&otro>=0&&otro!==EI){msg(`Ya existe otro usuario "${u}".`,1);return}
+  if(!ed||p){if(p.length<4){msg('La contraseña debe tener al menos 4 caracteres.',1);return}}
+  const idx=ed?EI:otro,prev=idx>=0?V.users[idx]:null;
+  if(prev&&prev.a&&!a&&V.users.filter(y=>y.a).length<2){msg('Debe quedar al menos un administrador.',1);return}
+  let rec;
+  if(ed&&!p){rec={...ed,u,a}}
+  else{const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+    const k=await kek(p,b64(salt),V.iter);const w=await C.encrypt({name:'AES-GCM',iv},k,RAW);rec={u,a,s:b64(salt),iv:b64(iv),w:b64(w)}}
+  let t;
+  if(ed){V.users[EI]=rec;const cam=[];if(ed.u!==u)cam.push(`usuario ${ed.u} → ${u}`);if(p)cam.push('clave nueva');if(!!ed.a!==!!a)cam.push(a?'ahora es Administrador':'ahora es Consulta');t=`"${u}" modificado${cam.length?' ('+cam.join(', ')+')':' (sin cambios)'}. Recuerde guardar el portal.`}
+  else if(idx>=0){V.users[idx]=rec;t=`Contraseña actualizada para "${u}". Recuerde guardar el portal.`}
+  else{V.users.push(rec);t=`Usuario agregado: "${u}". Recuerde guardar el portal.`}
+  if(ME&&ed&&ed.u===ME.u)ME=rec;
+  limpiar();list();msg(t)});
 $('save').addEventListener('click',async()=>{
   const out=PRISTINE.replace(/(<script id="vault" type="application\/json">)[\s\S]*?(<\/script>)/,(m,a,b)=>a+JSON.stringify(V)+b);
   const blob=new Blob([out],{type:'text/html'});
